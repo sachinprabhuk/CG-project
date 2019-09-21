@@ -33,7 +33,7 @@ void displaytext(void)
 	glLoadIdentity();
 	glColor3f(0, 1, 1);
 
-	drawBitmapText(string, 400, 450, 0);
+	drawBitmapText(string, 350, 450, 0);
 
 	glutSwapBuffers();
 }
