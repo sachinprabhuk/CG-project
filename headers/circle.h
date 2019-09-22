@@ -8,5 +8,5 @@ struct Circle
 
 void circleGrow(struct Circle *c);
 void circleDraw(struct Circle *c);
-void hey();
+
 #endif

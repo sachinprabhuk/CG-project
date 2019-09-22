@@ -1,5 +1,6 @@
 #include <GL/glut.h>
 #include <stdio.h>
+#include "./headers/constants.h"
 
 char string[20];
 
@@ -27,13 +28,42 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
-void displaytext(void)
+unsigned char *getPixels()
 {
+	const int pixelCount = W_WIDTH * W_HEIGHT;
+
+	// since each pixel has R, G and B component
+	unsigned char *pixels = calloc(pixelCount * 3, sizeof(char));
+	glReadPixels(0, 0, W_WIDTH, W_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	return pixels;
+}
+
+void display(void)
+{
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	glColor3f(0, 0, 1);
 
-	drawText(string, 150, 300, 0);
+	drawText(string, 20, 240, 0);
+
+	// rectangle at left bottom corner
+	glRectd(0, W_HEIGHT - 100, 100, W_HEIGHT);
+
+	////// getting pixels works before glutSwapBuffer call.. not after. //////////
+	unsigned char *pixels = getPixels();
+
+	int row, col, start;
+
+	row = 99;
+	col = 99;
+	start = (row * W_WIDTH + col) * 3;
+	printf("%d %d %d\n", pixels[start], pixels[start + 1], pixels[start + 2]);
+
+	row = 100;
+	col = 100;
+	start = (row * W_WIDTH + col) * 3;
+	printf("%d %d %d\n", pixels[start], pixels[start + 1], pixels[start + 2]);
 
 	glutSwapBuffers();
 }
@@ -45,12 +75,15 @@ int main(int argc, char *argv[])
 	scanf("%s", string);
 
 	glutInit(&argc, argv);
+
+	// initializing window
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(W_WIDTH, W_HEIGHT);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("CG PROJECT");
-	glutDisplayFunc(displaytext);
-	// glutIdleFunc(displaytext);
+
+	glutDisplayFunc(display);
+
 	glutReshapeFunc(reshape);
 
 	glutMainLoop();
