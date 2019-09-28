@@ -51,14 +51,14 @@ void display(void)
 	glLoadIdentity();
 	glColor3f(0, 0, 1);
 
-	drawText(string, 0, 100, 0);
+	drawText(string, 200, 300, 0);
 
 	const int radius = randomRange(2, 40);
 	Circle *temp = getCircle(
 			randomRange(radius, W_WIDTH - radius),
 			randomRange(radius, W_HEIGHT - radius),
 			radius,
-			1);
+			1, 0);
 	unsigned short int status = addCircle(cSystem, temp);
 	if (status == 0)
 		free(temp);
@@ -73,6 +73,25 @@ void animator(int a)
 {
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, animator, 0);
+}
+
+void mouseHover(int x, int y)
+{
+	y = W_HEIGHT - y;
+	int count = cSystem->circleCount;
+	Circle **circles = cSystem->circles;
+
+	// clear fill
+	for (int i = 0; i < count; ++i)
+		circles[i]->fill = 0;
+
+	// paint the required one.
+	for (int i = 0; i < count; ++i)
+		if (distance(circles[i]->x, circles[i]->y, x, y) < circles[i]->r)
+		{
+			circles[i]->fill = 1;
+			break;
+		}
 }
 
 int main(int argc, char *argv[])
@@ -95,6 +114,7 @@ int main(int argc, char *argv[])
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0, animator, 0);
+	glutPassiveMotionFunc(mouseHover);
 
 	glutMainLoop();
 	return 0;
