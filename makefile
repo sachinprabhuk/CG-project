@@ -1,8 +1,11 @@
-output: main.o ./lib/circle.o ./lib/constants.o ./lib/utils.o
-	gcc -o output main.o ./lib/constants.o ./lib/circle.o ./lib/utils.o -lglut -lGLU -lGL -lm
+output: main.o ./lib/circle.o ./lib/constants.o ./lib/utils.o ./lib/circleSys.o
+	gcc -o output main.o ./lib/constants.o ./lib/circle.o ./lib/utils.o ./lib/circleSys.o -lglut -lGLU -lGL -lm
 
 main.o: main.c
 	gcc -c main.c
+
+circleSys.o: ./headers/circleSys.h ./lib/circleSys.c
+	gcc -c ./lib/circleSys.c
 
 utils.o: ./headers/utils.h ./lib/utils.c
 	gcc -c utils.c

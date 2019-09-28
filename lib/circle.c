@@ -21,6 +21,7 @@ void circleGrow(Circle *c)
 
 void circleDraw(Circle *c)
 {
+	// printf("x = %f\n", c->x);
 	glLineWidth(1);
 	glBegin(GL_LINE_LOOP);
 	glColor3f(0, 1, 0);

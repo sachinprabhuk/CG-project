@@ -1,16 +1,14 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <time.h>
-#include <stdlib.h>
 #include "./headers/circle.h"
 #include "./headers/constants.h"
 #include "./headers/utils.h"
+#include "./headers/circleSys.h"
 
 char string[20];
-const int MAX_CIRCLES = 1200;
-const int initRadius = 50;
-Circle *circles[1200];
-int circleCount = 0;
+const int initRadius = 100;
+CircleSystem *cSystem;
 
 void drawText(char *string, float x, float y, float z)
 {
@@ -53,21 +51,14 @@ void display(void)
 	glLoadIdentity();
 	glColor3f(0, 0, 1);
 
-	if (circleCount < MAX_CIRCLES)
-	{
-		circles[circleCount] = getCircle(
-				randomRange(initRadius, W_WIDTH - initRadius),
-				randomRange(initRadius, W_HEIGHT - initRadius),
-				initRadius, 1);
-		++circleCount;
-	}
-	for (int i = 0; i < circleCount; ++i)
-	{
-		circleGrow(circles[i]);
-		circleDraw(circles[i]);
-	}
-
 	drawText(string, 0, 100, 0);
+	Circle *temp = getCircle(
+			randomRange(initRadius, W_WIDTH - initRadius),
+			randomRange(initRadius, W_HEIGHT - initRadius),
+			initRadius,
+			1);
+	addCircle(cSystem, temp);
+	drawCircleSystem(cSystem);
 
 	glutSwapBuffers();
 }
@@ -86,6 +77,7 @@ int main(int argc, char *argv[])
 	printf("Enter string : ");
 	scanf("%s", string);
 
+	cSystem = getCircleSystem(500);
 	glutInit(&argc, argv);
 
 	// initializing window
