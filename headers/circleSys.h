@@ -12,8 +12,12 @@ typedef struct sys
 
 CircleSystem *getCircleSystem(int maxCircleCount);
 
+void updateCircleSystem(CircleSystem *sys);
+
+short int fitsInSystem(CircleSystem *sys, Circle *c);
+
 void drawCircleSystem(CircleSystem *sys);
 
-unsigned short int addCircle(CircleSystem *sys, Circle *c);
+short int addCircle(CircleSystem *sys, Circle *c);
 
 #endif

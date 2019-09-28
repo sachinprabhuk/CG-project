@@ -16,12 +16,16 @@ Circle *getCircle(float x, float y, float r, short int gr)
 void circleGrow(Circle *c)
 {
 	if (c->growing == 1)
+	{
 		c->r += CIRCLE_GROWTH_SPEED;
+		int x = c->x, y = c->y, r = c->r;
+		if ((x + r) >= W_WIDTH || (x - r) <= 0 || (y + r) >= W_HEIGHT || (y - r) <= 0)
+			c->growing = 0;
+	}
 }
 
 void circleDraw(Circle *c)
 {
-	// printf("x = %f\n", c->x);
 	glLineWidth(1);
 	glBegin(GL_LINE_LOOP);
 	glColor3f(0, 1, 0);

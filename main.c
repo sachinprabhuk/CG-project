@@ -52,12 +52,18 @@ void display(void)
 	glColor3f(0, 0, 1);
 
 	drawText(string, 0, 100, 0);
+
+	const int radius = randomRange(2, 40);
 	Circle *temp = getCircle(
-			randomRange(initRadius, W_WIDTH - initRadius),
-			randomRange(initRadius, W_HEIGHT - initRadius),
-			initRadius,
+			randomRange(radius, W_WIDTH - radius),
+			randomRange(radius, W_HEIGHT - radius),
+			radius,
 			1);
-	addCircle(cSystem, temp);
+	unsigned short int status = addCircle(cSystem, temp);
+	if (status == 0)
+		free(temp);
+
+	updateCircleSystem(cSystem);
 	drawCircleSystem(cSystem);
 
 	glutSwapBuffers();
