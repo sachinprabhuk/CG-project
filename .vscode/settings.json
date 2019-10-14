@@ -1,6 +1,6 @@
 {
-	"files.associations": {
-		"stdlib.h": "c",
-		"math.h": "c"
-	}
+  "files.associations": {
+    "stdlib.h": "c",
+    "math.h": "c"
+  }
 }

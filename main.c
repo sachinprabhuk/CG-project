@@ -9,17 +9,25 @@
 char string[20];
 const int initRadius = 100;
 CircleSystem *cSystem;
+unsigned char *pixels;
+
+typedef struct
+{
+	int x, y;
+} Point;
+Point points[100000];
+int pointsCount = 0;
 
 void drawText(char *string, float x, float y, float z)
 {
-	glPushMatrix();
+	// glPushMatrix();
 	glLineWidth(50);
-	glColor3f(1, 0, 0);
-	glTranslatef(x, y, z);
-	glScalef(1.5, 1.5, 1);
+	glColor3f(0, 0, 0);
+	// glTranslatef(x, y, z);
+	// glScalef(1.2, 1.2, 1);
 	for (char *c = string; *c != '\0'; ++c)
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
-	glPopMatrix();
+	// glPopMatrix();
 }
 
 void reshape(int w, int h)
@@ -48,17 +56,11 @@ void display(void)
 {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
 	glColor3f(0, 0, 1);
 
-	drawText(string, 200, 300, 0);
-
-	const int radius = randomRange(2, 40);
-	Circle *temp = getCircle(
-			randomRange(radius, W_WIDTH - radius),
-			randomRange(radius, W_HEIGHT - radius),
-			radius,
-			1, 0);
+	const int radius = randomRange(1, 2);
+	const Point currPoint = points[randomRange(0, pointsCount)];
+	Circle *temp = getCircle(currPoint.x, currPoint.y, radius, 1, 0);
 	unsigned short int status = addCircle(cSystem, temp);
 	if (status == 0)
 		free(temp);
@@ -66,7 +68,7 @@ void display(void)
 	updateCircleSystem(cSystem);
 	drawCircleSystem(cSystem);
 
-	glutSwapBuffers();
+	glFlush();
 }
 
 void animator(int a)
@@ -94,6 +96,35 @@ void mouseHover(int x, int y)
 		}
 }
 
+void initDisplay()
+{
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	drawText(string, 100, 190, 0);
+
+	unsigned char *pixels = getPixels();
+	const int pixelCount = W_WIDTH * W_HEIGHT;
+	for (int i = 0; i < pixelCount; i += 3)
+	{
+		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
+		{
+			const int currPixel = i / 3;
+			const int x = currPixel % W_WIDTH;
+			const int y = currPixel / W_WIDTH;
+			points[pointsCount].x = x;
+			points[pointsCount].y = y;
+			++pointsCount;
+		}
+	}
+	printf("required pixel count: %d\n", pointsCount);
+
+	// glFlush();
+	glutDisplayFunc(display);
+	glutTimerFunc(0, animator, 0);
+	glutPassiveMotionFunc(mouseHover);
+}
+
 int main(int argc, char *argv[])
 {
 	srand(time(0));
@@ -106,15 +137,13 @@ int main(int argc, char *argv[])
 	glutInit(&argc, argv);
 
 	// initializing window
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
 	glutInitWindowSize(W_WIDTH, W_HEIGHT);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(200, 80);
 	glutCreateWindow("CG PROJECT");
 
-	glutDisplayFunc(display);
+	glutDisplayFunc(initDisplay);
 	glutReshapeFunc(reshape);
-	glutTimerFunc(0, animator, 0);
-	glutPassiveMotionFunc(mouseHover);
 
 	glutMainLoop();
 	return 0;
