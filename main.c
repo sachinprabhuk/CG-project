@@ -9,13 +9,8 @@
 char string[20];
 const int initRadius = 100;
 CircleSystem *cSystem;
-unsigned char *pixels;
 
-typedef struct
-{
-	int x, y;
-} Point;
-Point points[100000];
+Point *points;
 int pointsCount = 0;
 
 void drawText(char *string, float x, float y, float z)
@@ -58,7 +53,7 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0, 0, 1);
 
-	const int radius = randomRange(1, 2);
+	const int radius = randomRange(2, 4);
 	const Point currPoint = points[randomRange(0, pointsCount)];
 	Circle *temp = getCircle(currPoint.x, currPoint.y, radius, 1, 0);
 	unsigned short int status = addCircle(cSystem, temp);
@@ -105,21 +100,22 @@ void initDisplay()
 
 	unsigned char *pixels = getPixels();
 	const int pixelCount = W_WIDTH * W_HEIGHT;
+
 	for (int i = 0; i < pixelCount; i += 3)
+		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
+			++pointsCount;
+	points = calloc(pointsCount, sizeof(Point));
+
+	for (int i = 0, k = 0; i < pixelCount; i += 3)
 	{
 		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
 		{
 			const int currPixel = i / 3;
-			const int x = currPixel % W_WIDTH;
-			const int y = currPixel / W_WIDTH;
-			points[pointsCount].x = x;
-			points[pointsCount].y = y;
-			++pointsCount;
+			points[k].x = currPixel % W_WIDTH - 230;
+			points[k++].y = currPixel / W_WIDTH + 200;
 		}
 	}
-	printf("required pixel count: %d\n", pointsCount);
 
-	// glFlush();
 	glutDisplayFunc(display);
 	glutTimerFunc(0, animator, 0);
 	glutPassiveMotionFunc(mouseHover);
@@ -133,7 +129,7 @@ int main(int argc, char *argv[])
 	printf("Enter string : ");
 	scanf("%s", string);
 
-	cSystem = getCircleSystem(500);
+	cSystem = getCircleSystem(600);
 	glutInit(&argc, argv);
 
 	// initializing window
