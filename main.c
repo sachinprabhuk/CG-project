@@ -5,6 +5,7 @@
 #include "./headers/constants.h"
 #include "./headers/utils.h"
 #include "./headers/circleSys.h"
+#include "./headers/circle.h"
 
 char string[20];
 const int initRadius = 100;
@@ -15,14 +16,14 @@ int pointsCount = 0;
 
 void drawText(char *string, float x, float y, float z)
 {
-	// glPushMatrix();
+	glPushMatrix();
 	glLineWidth(50);
 	glColor3f(0, 0, 0);
-	// glTranslatef(x, y, z);
+	glTranslatef(x, y, z);
 	// glScalef(1.2, 1.2, 1);
 	for (char *c = string; *c != '\0'; ++c)
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
-	// glPopMatrix();
+	glPopMatrix();
 }
 
 void reshape(int w, int h)
@@ -96,23 +97,23 @@ void initDisplay()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	drawText(string, 100, 190, 0);
+	drawText(string, 70, 160, 0);
 
 	unsigned char *pixels = getPixels();
-	const int pixelCount = W_WIDTH * W_HEIGHT;
+	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
 
-	for (int i = 0; i < pixelCount; i += 3)
+	for (int i = 0; i < pixelsArrSize; i += 3)
 		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
 			++pointsCount;
 	points = calloc(pointsCount, sizeof(Point));
 
-	for (int i = 0, k = 0; i < pixelCount; i += 3)
+	for (int i = 0, k = 0; i < pixelsArrSize; i += 3)
 	{
 		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
 		{
 			const int currPixel = i / 3;
-			points[k].x = currPixel % W_WIDTH - 230;
-			points[k++].y = currPixel / W_WIDTH + 200;
+			points[k].x = currPixel % W_WIDTH;
+			points[k++].y = currPixel / W_WIDTH;
 		}
 	}
 
