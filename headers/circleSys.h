@@ -12,7 +12,7 @@ typedef struct sys
 
 CircleSystem *getCircleSystem(int maxCircleCount);
 
-void updateCircleSystem(CircleSystem *sys);
+void updateCircleSystem(CircleSystem *sys, Vector2 *mouse);
 
 short int fitsInSystem(CircleSystem *sys, Circle *c);
 

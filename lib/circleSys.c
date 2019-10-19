@@ -8,25 +8,28 @@ void drawCircleSystem(CircleSystem *sys)
 	Circle **circles = sys->circles;
 	const int count = sys->circleCount;
 	for (int i = 0; i < count; ++i)
-	{
 		circleDraw(circles[i]);
-		circleGrow(circles[i]);
-	}
 }
 
-void updateCircleSystem(CircleSystem *sys)
+void updateCircleSystem(CircleSystem *sys, Vector2 *mouse)
 {
-	int count = sys->circleCount;
-	float centerDist;
 	Circle **circles = sys->circles;
+	const int count = sys->circleCount;
 	for (int i = 0; i < count; ++i)
-		for (int j = i + 1; j < count; ++j)
-			if (circles[i] != circles[j])
-			{
-				centerDist = distance(circles[i]->x, circles[i]->y, circles[j]->x, circles[j]->y);
-				if (centerDist <= (circles[i]->r + circles[j]->r))
-					circles[i]->growing = 0, circles[j]->growing = 0;
-			}
+	{
+		circleUpdate(circles[i], mouse);
+	}
+	// int count = sys->circleCount;
+	// float centerDist;
+	// Circle **circles = sys->circles;
+	// for (int i = 0; i < count; ++i)
+	// 	for (int j = i + 1; j < count; ++j)
+	// 		if (circles[i] != circles[j])
+	// 		{
+	// 			centerDist = distance(circles[i]->x, circles[i]->y, circles[j]->x, circles[j]->y);
+	// 			if (centerDist <= (circles[i]->r + circles[j]->r))
+	// 				circles[i]->growing = 0, circles[j]->growing = 0;
+	// 		}
 }
 
 short int fitsInSystem(CircleSystem *sys, Circle *c)
@@ -40,7 +43,7 @@ short int fitsInSystem(CircleSystem *sys, Circle *c)
 	for (int i = 0; i < count; ++i)
 	{
 		Circle *curr = sys->circles[i];
-		if (distance(curr->x, curr->y, c->x, c->y) < (c->r + curr->r))
+		if (distance(curr->pos.x, curr->pos.y, c->pos.x, c->pos.y) < (c->r + curr->r))
 			return 0;
 	}
 
@@ -49,9 +52,6 @@ short int fitsInSystem(CircleSystem *sys, Circle *c)
 
 short int addCircle(CircleSystem *sys, Circle *c)
 {
-	if (fitsInSystem(sys, c) == 0)
-		return 0;
-
 	sys->circles[sys->circleCount] = c;
 	++sys->circleCount;
 	return 1;

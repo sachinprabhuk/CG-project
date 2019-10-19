@@ -5,14 +5,12 @@
 #include "./headers/constants.h"
 #include "./headers/utils.h"
 #include "./headers/circleSys.h"
-#include "./headers/circle.h"
+#include "./headers/vector.h"
 
 char string[20];
 const int initRadius = 100;
 CircleSystem *cSystem;
-
-Point *points;
-int pointsCount = 0;
+Vector2 mouse = {-1000, -1000};
 
 void drawText(char *string, float x, float y, float z)
 {
@@ -54,14 +52,7 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(0, 0, 1);
 
-	const int radius = randomRange(2, 4);
-	const Point currPoint = points[randomRange(0, pointsCount)];
-	Circle *temp = getCircle(currPoint.x, currPoint.y, radius, 1, 0);
-	unsigned short int status = addCircle(cSystem, temp);
-	if (status == 0)
-		free(temp);
-
-	updateCircleSystem(cSystem);
+	updateCircleSystem(cSystem, &mouse);
 	drawCircleSystem(cSystem);
 
 	glFlush();
@@ -75,21 +66,8 @@ void animator(int a)
 
 void mouseHover(int x, int y)
 {
-	y = W_HEIGHT - y;
-	int count = cSystem->circleCount;
-	Circle **circles = cSystem->circles;
-
-	// clear fill
-	for (int i = 0; i < count; ++i)
-		circles[i]->fill = 0;
-
-	// paint the required one.
-	for (int i = 0; i < count; ++i)
-		if (distance(circles[i]->x, circles[i]->y, x, y) < circles[i]->r)
-		{
-			circles[i]->fill = 1;
-			break;
-		}
+	mouse.x = x;
+	mouse.y = W_HEIGHT - y;
 }
 
 void initDisplay()
@@ -102,18 +80,22 @@ void initDisplay()
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
 
-	for (int i = 0; i < pixelsArrSize; i += 3)
-		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
-			++pointsCount;
-	points = calloc(pointsCount, sizeof(Point));
-
-	for (int i = 0, k = 0; i < pixelsArrSize; i += 3)
+	for (int i = 0, k = 0; i < pixelsArrSize; i += 15)
 	{
-		if ((int)pixels[i] == 0 && (int)pixels[i + 1] == 0 && (int)pixels[i + 2] == 0)
+		if (
+				(int)pixels[i] == 0 &&
+				(int)pixels[i + 1] == 0 &&
+				(int)pixels[i + 2] == 0 &&
+				(rand() % 11) > 9)
 		{
+
 			const int currPixel = i / 3;
-			points[k].x = currPixel % W_WIDTH;
-			points[k++].y = currPixel / W_WIDTH;
+			int x = currPixel % W_WIDTH;
+			int y = currPixel / W_WIDTH;
+			const int radius = randomRange(1, 8);
+			Circle *newCircle = getCircle(x, y, radius, 1, 1);
+			addCircle(cSystem, newCircle);
+			k++;
 		}
 	}
 
