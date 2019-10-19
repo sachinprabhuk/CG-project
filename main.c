@@ -80,7 +80,7 @@ void initDisplay()
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
 
-	for (int i = 0, k = 0; i < pixelsArrSize; i += 15)
+	for (int i = 0, k = 0; i < pixelsArrSize; i += 6)
 	{
 		if (
 				(int)pixels[i] == 0 &&
@@ -92,7 +92,7 @@ void initDisplay()
 			const int currPixel = i / 3;
 			int x = currPixel % W_WIDTH;
 			int y = currPixel / W_WIDTH;
-			const int radius = randomRange(1, 8);
+			const int radius = randomRange(2, 6);
 			Circle *newCircle = getCircle(x, y, radius, 1, 1);
 			addCircle(cSystem, newCircle);
 			k++;

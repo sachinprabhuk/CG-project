@@ -15,18 +15,16 @@ Circle *getCircle(float x, float y, float r, short int gr, short int fill)
 	circle->r = r;
 	circle->growing = gr;
 	circle->fill = fill;
-	(circle->color).r = randomRange(0, 255) / (float)255;
-	(circle->color).g = randomRange(0, 255) / (float)255;
-	(circle->color).b = randomRange(0, 255) / (float)255;
+	circle->color = COLORS[rand() % 5];
 
 	return circle;
 }
 
 void circleGrow(Circle *c)
 {
-	if (c->r > 8)
+	if (c->r > 6)
 		c->growing = -1;
-	else if (c->r < 4)
+	else if (c->r < 2)
 		c->growing = 1;
 
 	c->r += (CIRCLE_GROWTH_SPEED * c->growing);
@@ -34,6 +32,7 @@ void circleGrow(Circle *c)
 
 void circleDraw(Circle *c)
 {
+	// printf("%.1f %.1f %.1f\n", c->color.r, c->color.g, c->color.b);
 	glLineWidth(1);
 	glColor3f(c->color.r, c->color.g, c->color.b);
 	if (c->fill)
@@ -67,7 +66,7 @@ void circleUpdate(Circle *circle, Vector2 *mouse)
 {
 	circleGrow(circle);
 
-	Vector2 *mouseForce = getMouseForce(&circle->pos, mouse);
+	Vector2 *mouseForce = getMouseForce(circle, mouse);
 	Vector2 *pullBack = getPullBackForce(circle);
 	Vector2 *resultant = vecGetAdd(mouseForce, pullBack);
 

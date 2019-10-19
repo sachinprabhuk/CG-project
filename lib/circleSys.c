@@ -19,17 +19,6 @@ void updateCircleSystem(CircleSystem *sys, Vector2 *mouse)
 	{
 		circleUpdate(circles[i], mouse);
 	}
-	// int count = sys->circleCount;
-	// float centerDist;
-	// Circle **circles = sys->circles;
-	// for (int i = 0; i < count; ++i)
-	// 	for (int j = i + 1; j < count; ++j)
-	// 		if (circles[i] != circles[j])
-	// 		{
-	// 			centerDist = distance(circles[i]->x, circles[i]->y, circles[j]->x, circles[j]->y);
-	// 			if (centerDist <= (circles[i]->r + circles[j]->r))
-	// 				circles[i]->growing = 0, circles[j]->growing = 0;
-	// 		}
 }
 
 short int fitsInSystem(CircleSystem *sys, Circle *c)
