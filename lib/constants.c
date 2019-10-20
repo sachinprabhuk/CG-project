@@ -1,11 +1,11 @@
 #include "../headers/constants.h"
 
-const int W_WIDTH = 600;
-const int W_HEIGHT = 400;
+int W_WIDTH = 1120;
+int W_HEIGHT = 620;
 const float PI = 3.1416;
 const float TWO_PI = 2 * 3.1416;
 const float CIRCLE_GROWTH_SPEED = 0.3;
-const float MOUSE_DIST_THRESHOLD = 80;
+const float MOUSE_DIST_THRESHOLD = 120;
 const float PULL_BACK_DRAG = 1 / (float)25;
 const float REPELL_DRAG = 1 / (float)10;
 const float ANGLE_BIAS = 40 * 3.1416 / 180;

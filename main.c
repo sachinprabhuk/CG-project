@@ -7,17 +7,28 @@
 #include "./headers/circleSys.h"
 #include "./headers/vector.h"
 
-int state=0;
 char string[50];
 CircleSystem *cSystem;
 Vector2 mouse = {1000, 1000};
+short int firstTime = 1, introPage = 1;
+const float scale = 1.6;
 
-void drawBitmapText(char *string,float x,float y,float z) 
-{  
+Vector2 *getPosition(char *string)
+{
+	int strWidth = glutStrokeLength(GLUT_STROKE_ROMAN, string) * scale;
+	int strHeight = 80 * scale;
+	Vector2 *pos = getVector(0, 0);
+	pos->x = (W_WIDTH - strWidth) >> 1;
+	pos->y = (W_HEIGHT - strHeight) >> 1;
+	return pos;
+}
+
+void drawBitmapText(char *string, float x, float y, float z)
+{
 	char *c;
-	glColor3f(0,0,0);
+	glColor3f(0, 0, 0);
 	glRasterPos3f(x, y, z);
-	for (c=string; *c != '\0'; c++) 
+	for (c = string; *c != '\0'; c++)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
 }
 
@@ -27,20 +38,10 @@ void drawText(char *string, float x, float y, float z)
 	glLineWidth(50);
 	glColor3f(0, 0, 0);
 	glTranslatef(x, y, z);
-	// glScalef(1.2, 1.2, 1);
+	glScalef(scale, scale, 1);
 	for (char *c = string; *c != '\0'; ++c)
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
 	glPopMatrix();
-}
-
-void reshape(int w, int h)
-{
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0, w, 0, h);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 unsigned char *getPixels()
@@ -84,7 +85,9 @@ void initDisplay()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	drawText(string, 60, 160, 0);
+	Vector2 *pos = getPosition(string);
+	drawText(string, pos->x, pos->y, 0);
+	free(pos);
 
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
@@ -116,34 +119,56 @@ void clean()
 	cleanCircleSystem(cSystem);
 }
 
+void reshape(int w, int h)
+{
+	W_WIDTH = w;
+	W_HEIGHT = h;
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, w, 0, h);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
 void displayText()
 {
-	drawBitmapText("USN",100,300,0);
-	drawBitmapText("NAME",300,300,0);
-	drawBitmapText("4NM16CS121",100,250,0);
-	drawBitmapText("SACHIN PRABHU",300,250,0);
-	drawBitmapText("4NM16CS122",100,200,0);
-	drawBitmapText("SAHANA KAMATH",300,200,0);
-	drawBitmapText("4NM16CS123",100,150,0);
-	drawBitmapText("SAHANA M",300,150,0);
-	drawBitmapText("WORD DESIGN",200,50,0);
+	drawBitmapText("WORD DESIGN", 200, 50, 0);
+	drawBitmapText("USN", 100, 300, 0);
+	drawBitmapText("NAME", 300, 300, 0);
+	drawBitmapText("4NM16CS121", 100, 250, 0);
+	drawBitmapText("SACHIN PRABHU", 300, 250, 0);
+	drawBitmapText("4NM16CS122", 100, 200, 0);
+	drawBitmapText("SAHANA KAMATH", 300, 200, 0);
+	drawBitmapText("4NM16CS123", 100, 150, 0);
+	drawBitmapText("SAHANA M", 300, 150, 0);
 
-	glutSwapBuffers();
-	 
+	glFlush();
 }
-void displayMainPage(void)
-{ 
-	glClearColor(1, 1, 1, 1);
-   	glClear(GL_COLOR_BUFFER_BIT);
-    	glLoadIdentity();
-	if(state==0)
-        	displayText();
-}
-void keyboard(unsigned char key, int x,int y)
+
+void displayMainPage()
 {
-	if(key == 'a') 	glutDisplayFunc(initDisplay);
-	if(key == 'b')	glutDisplayFunc(displayMainPage);
-	glutPostRedisplay();	
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	displayText();
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	if (key == 's' && introPage == 1)
+	{
+		glutDisplayFunc((firstTime ? initDisplay : display));
+		firstTime = 0;
+		introPage = 0;
+		glutPostRedisplay();
+	}
+	if (key == 'b' && introPage == 0)
+	{
+		introPage = 1;
+		glutDisplayFunc(displayMainPage);
+		glutPostRedisplay();
+	}
 }
 
 int main(int argc, char *argv[])
@@ -160,13 +185,12 @@ int main(int argc, char *argv[])
 	// initializing window
 	glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
 	glutInitWindowSize(W_WIDTH, W_HEIGHT);
-	glutInitWindowPosition(200, 80);
+	glutInitWindowPosition(160, 80);
 	glutCreateWindow("CG PROJECT");
 
 	glutKeyboardFunc(keyboard);
 	glutDisplayFunc(displayMainPage);
 	glutReshapeFunc(reshape);
-
 
 	atexit(clean);
 
