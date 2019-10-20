@@ -8,14 +8,15 @@
 Circle *getCircle(float x, float y, float r, short int gr, short int fill)
 {
 	Circle *circle = malloc(sizeof(Circle));
-	circle->pos.x = x;
-	circle->pos.y = y;
+	circle->pos.x = x + randomRange(-500, 500);
+	circle->pos.y = y + randomRange(-500, 500);
 	circle->origin.x = x;
 	circle->origin.y = y;
 	circle->r = r;
 	circle->growing = gr;
 	circle->fill = fill;
-	int ci = rand() % 5;
+	circle->growthSpeed = randomRange(1, 4) / 10.0;
+	int ci = randomRange(0, 4);
 	circle->color.r = COLORS[ci].r / 255;
 	circle->color.g = COLORS[ci].g / 255;
 	circle->color.b = COLORS[ci].b / 255;
@@ -24,12 +25,12 @@ Circle *getCircle(float x, float y, float r, short int gr, short int fill)
 
 void circleGrow(Circle *c)
 {
-	if (c->r > 6)
+	if (c->r > MAX_CIRCLE_RAD)
 		c->growing = -1;
-	else if (c->r < 4)
+	else if (c->r < MIN_CIRCLE_RAD)
 		c->growing = 1;
 
-	c->r += (CIRCLE_GROWTH_SPEED * c->growing);
+	c->r += (c->growthSpeed * c->growing);
 }
 
 void circleDraw(Circle *c)

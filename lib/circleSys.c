@@ -2,35 +2,45 @@
 #include "../headers/circleSys.h"
 #include "../headers/circle.h"
 #include "../headers/utils.h"
+#include "../headers/list.h"
 
 void drawCircleSystem(CircleSystem *sys)
 {
-	Circle **circles = sys->circles;
-	const int count = sys->circleCount;
-	for (int i = 0; i < count; ++i)
-		circleDraw(circles[i]);
+	List *circles = sys->circles;
+	node *curr = circles->first;
+	while (curr)
+	{
+		circleDraw(curr->circle);
+		curr = curr->next;
+	}
 }
 
 void updateCircleSystem(CircleSystem *sys, Vector2 *mouse)
 {
-	Circle **circles = sys->circles;
-	const int count = sys->circleCount;
-	for (int i = 0; i < count; ++i)
-		circleUpdate(circles[i], mouse);
+	List *circles = sys->circles;
+	node *curr = circles->first;
+	while (curr)
+	{
+		circleUpdate(curr->circle, mouse);
+		curr = curr->next;
+	}
 }
 
 short int addCircle(CircleSystem *sys, Circle *c)
 {
-	sys->circles[sys->circleCount] = c;
-	++sys->circleCount;
+	listPush(sys->circles, c);
 	return 1;
 }
 
-CircleSystem *getCircleSystem(int maxCircleCount)
+CircleSystem *getCircleSystem()
 {
 	CircleSystem *resp = malloc(sizeof(CircleSystem));
-	resp->maxCircleCount = maxCircleCount;
-	resp->circleCount = 0;
-	resp->circles = calloc(maxCircleCount, sizeof(Circle));
+	resp->circles = getList();
 	return resp;
+}
+
+void cleanCircleSystem(CircleSystem *c)
+{
+	listDelete(c->circles);
+	free(c);
 }

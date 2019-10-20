@@ -7,10 +7,9 @@
 #include "./headers/circleSys.h"
 #include "./headers/vector.h"
 
-char string[20];
-const int initRadius = 100;
+char string[50];
 CircleSystem *cSystem;
-Vector2 mouse = {-1000, -1000};
+Vector2 mouse = {1000, 1000};
 
 void drawText(char *string, float x, float y, float z)
 {
@@ -80,7 +79,7 @@ void initDisplay()
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
 
-	for (int i = 0, k = 0; i < pixelsArrSize; i += 9)
+	for (int i = 0; i < pixelsArrSize; i += 9)
 	{
 		if (
 				(int)pixels[i] == 0 &&
@@ -88,20 +87,23 @@ void initDisplay()
 				(int)pixels[i + 2] == 0 &&
 				(rand() % 11) > 9)
 		{
-
 			const int currPixel = i / 3;
 			int x = currPixel % W_WIDTH;
 			int y = currPixel / W_WIDTH;
-			const int radius = randomRange(2, 6);
+			const int radius = randomRange(MIN_CIRCLE_RAD, MAX_CIRCLE_RAD);
 			Circle *newCircle = getCircle(x, y, radius, 1, 1);
 			addCircle(cSystem, newCircle);
-			k++;
 		}
 	}
 
 	glutDisplayFunc(display);
 	glutTimerFunc(0, animator, 0);
 	glutPassiveMotionFunc(mouseHover);
+}
+
+void clean()
+{
+	cleanCircleSystem(cSystem);
 }
 
 int main(int argc, char *argv[])
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
 	printf("Enter string : ");
 	scanf("%s", string);
 
-	cSystem = getCircleSystem(600);
+	cSystem = getCircleSystem();
 	glutInit(&argc, argv);
 
 	// initializing window
@@ -124,6 +126,9 @@ int main(int argc, char *argv[])
 	glutDisplayFunc(initDisplay);
 	glutReshapeFunc(reshape);
 
+	atexit(clean);
+
 	glutMainLoop();
+
 	return 0;
 }

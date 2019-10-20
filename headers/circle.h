@@ -11,6 +11,7 @@ typedef struct circle
 	float r;
 	short int fill;
 	short int growing;
+	float growthSpeed;
 	Color color;
 } Circle;
 
