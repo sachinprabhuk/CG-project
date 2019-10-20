@@ -75,12 +75,12 @@ void initDisplay()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	drawText(string, 70, 160, 0);
+	drawText(string, 60, 160, 0);
 
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
 
-	for (int i = 0, k = 0; i < pixelsArrSize; i += 6)
+	for (int i = 0, k = 0; i < pixelsArrSize; i += 9)
 	{
 		if (
 				(int)pixels[i] == 0 &&

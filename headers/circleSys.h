@@ -14,8 +14,6 @@ CircleSystem *getCircleSystem(int maxCircleCount);
 
 void updateCircleSystem(CircleSystem *sys, Vector2 *mouse);
 
-short int fitsInSystem(CircleSystem *sys, Circle *c);
-
 void drawCircleSystem(CircleSystem *sys);
 
 short int addCircle(CircleSystem *sys, Circle *c);

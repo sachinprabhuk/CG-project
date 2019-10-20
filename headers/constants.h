@@ -12,5 +12,6 @@ extern const float MOUSE_DIST_THRESHOLD;
 extern const float PULL_BACK_DRAG;
 extern const float REPELL_DRAG;
 extern const Color COLORS[5];
+extern const float ANGLE_BIAS;
 
 #endif

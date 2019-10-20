@@ -15,8 +15,10 @@ Circle *getCircle(float x, float y, float r, short int gr, short int fill)
 	circle->r = r;
 	circle->growing = gr;
 	circle->fill = fill;
-	circle->color = COLORS[rand() % 5];
-
+	int ci = rand() % 5;
+	circle->color.r = COLORS[ci].r / 255;
+	circle->color.g = COLORS[ci].g / 255;
+	circle->color.b = COLORS[ci].b / 255;
 	return circle;
 }
 
@@ -24,7 +26,7 @@ void circleGrow(Circle *c)
 {
 	if (c->r > 6)
 		c->growing = -1;
-	else if (c->r < 2)
+	else if (c->r < 4)
 		c->growing = 1;
 
 	c->r += (CIRCLE_GROWTH_SPEED * c->growing);
@@ -59,6 +61,7 @@ Vector2 *getPullBackForce(Circle *circle)
 {
 	Vector2 *vec = vecGetSub(&circle->origin, &circle->pos);
 	vecMult(vec, PULL_BACK_DRAG);
+	vecAddAngle(vec, ANGLE_BIAS);
 	return vec;
 }
 
