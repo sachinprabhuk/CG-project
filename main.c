@@ -6,6 +6,7 @@
 #include "./headers/utils.h"
 #include "./headers/circleSys.h"
 #include "./headers/vector.h"
+#include "./headers/introPage.h"
 
 char string[50];
 CircleSystem *cSystem;
@@ -13,31 +14,16 @@ Vector2 mouse = {1000, 1000};
 short int firstTime = 1, introPage = 1;
 const float scale = 1.6;
 
-Vector2 *getPosition(char *string)
+void drawString(char *string)
 {
-	int strWidth = glutStrokeLength(GLUT_STROKE_ROMAN, string) * scale;
-	int strHeight = 80 * scale;
-	Vector2 *pos = getVector(0, 0);
-	pos->x = (W_WIDTH - strWidth) >> 1;
-	pos->y = (W_HEIGHT - strHeight) >> 1;
-	return pos;
-}
-
-void drawBitmapText(char *string, float x, float y, float z)
-{
-	char *c;
-	glColor3f(0, 0, 0);
-	glRasterPos3f(x, y, z);
-	for (c = string; *c != '\0'; c++)
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
-}
-
-void drawText(char *string, float x, float y, float z)
-{
+	const int strWidth = glutStrokeLength(GLUT_STROKE_ROMAN, string) * scale;
+	const int strHeight = 80 * scale;
+	const int x = (W_WIDTH - strWidth) >> 1;
+	const int y = (W_HEIGHT - strHeight) >> 1;
 	glPushMatrix();
 	glLineWidth(50);
 	glColor3f(0, 0, 0);
-	glTranslatef(x, y, z);
+	glTranslatef(x, y, 0);
 	glScalef(scale, scale, 1);
 	for (char *c = string; *c != '\0'; ++c)
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, *c);
@@ -85,9 +71,7 @@ void initDisplay()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	Vector2 *pos = getPosition(string);
-	drawText(string, pos->x, pos->y, 0);
-	free(pos);
+	drawString(string);
 
 	unsigned char *pixels = getPixels();
 	const int pixelsArrSize = W_WIDTH * W_HEIGHT * 3;
@@ -121,8 +105,6 @@ void clean()
 
 void reshape(int w, int h)
 {
-	W_WIDTH = w;
-	W_HEIGHT = h;
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -131,39 +113,16 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
-void displayText()
-{
-	drawBitmapText("WORD DESIGN", 200, 50, 0);
-	drawBitmapText("USN", 100, 300, 0);
-	drawBitmapText("NAME", 300, 300, 0);
-	drawBitmapText("4NM16CS121", 100, 250, 0);
-	drawBitmapText("SACHIN PRABHU", 300, 250, 0);
-	drawBitmapText("4NM16CS122", 100, 200, 0);
-	drawBitmapText("SAHANA KAMATH", 300, 200, 0);
-	drawBitmapText("4NM16CS123", 100, 150, 0);
-	drawBitmapText("SAHANA M", 300, 150, 0);
-
-	glFlush();
-}
-
-void displayMainPage()
-{
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	displayText();
-}
-
 void keyboard(unsigned char key, int x, int y)
 {
-	if (key == 's' && introPage == 1)
+	if ((key == 's' || key == 'S') && introPage == 1)
 	{
 		glutDisplayFunc((firstTime ? initDisplay : display));
 		firstTime = 0;
 		introPage = 0;
 		glutPostRedisplay();
 	}
-	if (key == 'b' && introPage == 0)
+	if ((key == 'b' || key == 'B') && introPage == 0)
 	{
 		introPage = 1;
 		glutDisplayFunc(displayMainPage);

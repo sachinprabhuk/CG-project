@@ -1,7 +1,7 @@
 #include "../headers/constants.h"
 
-int W_WIDTH = 1120;
-int W_HEIGHT = 620;
+const int W_WIDTH = 1120;
+const int W_HEIGHT = 620;
 const float PI = 3.1416;
 const float TWO_PI = 2 * 3.1416;
 const float CIRCLE_GROWTH_SPEED = 0.3;
