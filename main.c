@@ -7,9 +7,19 @@
 #include "./headers/circleSys.h"
 #include "./headers/vector.h"
 
+int state=0;
 char string[50];
 CircleSystem *cSystem;
 Vector2 mouse = {1000, 1000};
+
+void drawBitmapText(char *string,float x,float y,float z) 
+{  
+	char *c;
+	glColor3f(0,0,0);
+	glRasterPos3f(x, y, z);
+	for (c=string; *c != '\0'; c++) 
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+}
 
 void drawText(char *string, float x, float y, float z)
 {
@@ -106,6 +116,36 @@ void clean()
 	cleanCircleSystem(cSystem);
 }
 
+void displayText()
+{
+	drawBitmapText("USN",100,300,0);
+	drawBitmapText("NAME",300,300,0);
+	drawBitmapText("4NM16CS121",100,250,0);
+	drawBitmapText("SACHIN PRABHU",300,250,0);
+	drawBitmapText("4NM16CS122",100,200,0);
+	drawBitmapText("SAHANA KAMATH",300,200,0);
+	drawBitmapText("4NM16CS123",100,150,0);
+	drawBitmapText("SAHANA M",300,150,0);
+	drawBitmapText("WORD DESIGN",200,50,0);
+
+	glutSwapBuffers();
+	 
+}
+void displayMainPage(void)
+{ 
+	glClearColor(1, 1, 1, 1);
+   	glClear(GL_COLOR_BUFFER_BIT);
+    	glLoadIdentity();
+	if(state==0)
+        	displayText();
+}
+void keyboard(unsigned char key, int x,int y)
+{
+	if(key == 'a') 	glutDisplayFunc(initDisplay);
+	if(key == 'b')	glutDisplayFunc(displayMainPage);
+	glutPostRedisplay();	
+}
+
 int main(int argc, char *argv[])
 {
 	srand(time(0));
@@ -123,8 +163,10 @@ int main(int argc, char *argv[])
 	glutInitWindowPosition(200, 80);
 	glutCreateWindow("CG PROJECT");
 
-	glutDisplayFunc(initDisplay);
+	glutKeyboardFunc(keyboard);
+	glutDisplayFunc(displayMainPage);
 	glutReshapeFunc(reshape);
+
 
 	atexit(clean);
 
