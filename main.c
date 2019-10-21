@@ -8,6 +8,7 @@
 #include "./headers/circleSys.h"
 #include "./headers/vector.h"
 #include "./headers/introPage.h"
+#include "./headers/callbacks.h"
 
 char string[50];
 CircleSystem *cSystem = NULL;
@@ -16,8 +17,6 @@ short int firstTime = 1, introPage = 1;
 const float scale = 1.6;
 Pos *charPositions;
 
-void initDisplay();
-
 short int isInside(int x, int y, Pos *pos)
 {
 	if (
@@ -25,32 +24,6 @@ short int isInside(int x, int y, Pos *pos)
 			(y >= pos->y && y <= (pos->y + pos->height)))
 		return 1;
 	return 0;
-}
-
-void mouseClickHandler(int button, int state, int x, int y)
-{
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		short int found = 0, i;
-		int len = strlen(string);
-		for (i = 0; i < len; ++i)
-		{
-			if (isInside(x, y, &charPositions[i]))
-			{
-				found = 1;
-				break;
-			}
-		}
-		if (found)
-		{
-			string[0] = string[i];
-			string[1] = '\0';
-			glutDisplayFunc(initDisplay);
-			printf("you clicked on %c\n", string[i]);
-		}
-		else
-			printf("not found!!");
-	}
 }
 
 void updatePositionArray(int x, int y)
@@ -106,40 +79,87 @@ unsigned char *getPixels()
 	return pixels;
 }
 
-void display(void)
-{
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(0, 0, 1);
-
-	updateCircleSystem(cSystem, &mouse);
-	drawCircleSystem(cSystem);
-
-	glFlush();
-}
-
-void animator(int a)
-{
-	glutPostRedisplay();
-	glutTimerFunc(1000 / 60, animator, 0);
-}
-
-void mouseHover(int x, int y)
-{
-	mouse.x = x;
-	mouse.y = W_HEIGHT - y;
-}
 void clean()
 {
 	cleanCircleSystem(cSystem);
 }
+
+int main(int argc, char *argv[])
+{
+	srand(time(0));
+
+	// input
+	printf("Enter string : ");
+	scanf("%s", string);
+
+	glutInit(&argc, argv);
+
+	// initializing window
+	glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
+	glutInitWindowSize(W_WIDTH, W_HEIGHT);
+	glutInitWindowPosition(160, 80);
+	glutCreateWindow("FLUID FONT");
+
+	glutKeyboardFunc(keyboard);
+	glutDisplayFunc(displayMainPage);
+	glutReshapeFunc(reshape);
+
+	atexit(clean);
+
+	glutMainLoop();
+
+	return 0;
+}
+
+// glut callbacks
+void mouseClickHandler(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		short int found = 0, i;
+		int len = strlen(string);
+		for (i = 0; i < len; ++i)
+			if (isInside(x, y, &charPositions[i]))
+			{
+				found = 1;
+				break;
+			}
+		if (found)
+		{
+			string[0] = string[i];
+			string[1] = '\0';
+			glutDisplayFunc(initDisplay);
+			printf("you clicked on %c\n", string[i]);
+		}
+		else
+			printf("not found!!");
+	}
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	if ((key == 's' || key == 'S') && introPage == 1)
+	{
+		glutDisplayFunc((firstTime ? initDisplay : display));
+		firstTime = 0;
+		introPage = 0;
+		glutPostRedisplay();
+	}
+	if ((key == 'b' || key == 'B') && introPage == 0)
+	{
+		introPage = 1;
+		glutDisplayFunc(displayMainPage);
+		glutPostRedisplay();
+	}
+}
+
 void initDisplay()
 {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	if (cSystem != NULL)
-		clean();
+		free(cSystem);
 	cSystem = getCircleSystem();
 
 	drawString(string);
@@ -163,6 +183,7 @@ void initDisplay()
 			addCircle(cSystem, newCircle);
 		}
 	}
+	free(pixels);
 
 	glutDisplayFunc(display);
 	glutTimerFunc(0, animator, 0);
@@ -180,46 +201,26 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
-void keyboard(unsigned char key, int x, int y)
+void display(void)
 {
-	if ((key == 's' || key == 'S') && introPage == 1)
-	{
-		glutDisplayFunc((firstTime ? initDisplay : display));
-		firstTime = 0;
-		introPage = 0;
-		glutPostRedisplay();
-	}
-	if ((key == 'b' || key == 'B') && introPage == 0)
-	{
-		introPage = 1;
-		glutDisplayFunc(displayMainPage);
-		glutPostRedisplay();
-	}
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(0, 0, 1);
+
+	updateCircleSystem(cSystem, &mouse);
+	drawCircleSystem(cSystem);
+
+	glFlush();
 }
 
-int main(int argc, char *argv[])
+void animator(int a)
 {
-	srand(time(0));
+	glutPostRedisplay();
+	glutTimerFunc(1000 / 60, animator, 0);
+}
 
-	// input
-	printf("Enter string : ");
-	scanf("%s", string);
-
-	glutInit(&argc, argv);
-
-	// initializing window
-	glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
-	glutInitWindowSize(W_WIDTH, W_HEIGHT);
-	glutInitWindowPosition(160, 80);
-	glutCreateWindow("CG PROJECT");
-
-	glutKeyboardFunc(keyboard);
-	glutDisplayFunc(displayMainPage);
-	glutReshapeFunc(reshape);
-
-	atexit(clean);
-
-	glutMainLoop();
-
-	return 0;
+void mouseHover(int x, int y)
+{
+	mouse.x = x;
+	mouse.y = W_HEIGHT - y;
 }
