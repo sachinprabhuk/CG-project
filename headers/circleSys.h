@@ -2,22 +2,21 @@
 #define CIRCLESYS
 
 #include "./circle.h"
+#include "./list.h"
 
 typedef struct sys
 {
-	int maxCircleCount;
-	int circleCount;
-	Circle **circles;
+	List *circles;
 } CircleSystem;
 
-CircleSystem *getCircleSystem(int maxCircleCount);
+CircleSystem *getCircleSystem();
 
-void updateCircleSystem(CircleSystem *sys);
+void updateCircleSystem(CircleSystem *, Vector2 *);
 
-short int fitsInSystem(CircleSystem *sys, Circle *c);
+void drawCircleSystem(CircleSystem *);
 
-void drawCircleSystem(CircleSystem *sys);
+short int addCircle(CircleSystem *, Circle *);
 
-short int addCircle(CircleSystem *sys, Circle *c);
+void cleanCircleSystem(CircleSystem *);
 
 #endif

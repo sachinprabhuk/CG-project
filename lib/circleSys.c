@@ -2,66 +2,45 @@
 #include "../headers/circleSys.h"
 #include "../headers/circle.h"
 #include "../headers/utils.h"
+#include "../headers/list.h"
 
 void drawCircleSystem(CircleSystem *sys)
 {
-	Circle **circles = sys->circles;
-	const int count = sys->circleCount;
-	for (int i = 0; i < count; ++i)
+	List *circles = sys->circles;
+	node *curr = circles->first;
+	while (curr)
 	{
-		circleDraw(circles[i]);
-		circleGrow(circles[i]);
+		circleDraw(curr->circle);
+		curr = curr->next;
 	}
 }
 
-void updateCircleSystem(CircleSystem *sys)
+void updateCircleSystem(CircleSystem *sys, Vector2 *mouse)
 {
-	int count = sys->circleCount;
-	float centerDist;
-	Circle **circles = sys->circles;
-	for (int i = 0; i < count; ++i)
-		for (int j = i + 1; j < count; ++j)
-			if (circles[i] != circles[j])
-			{
-				centerDist = distance(circles[i]->x, circles[i]->y, circles[j]->x, circles[j]->y);
-				if (centerDist <= (circles[i]->r + circles[j]->r))
-					circles[i]->growing = 0, circles[j]->growing = 0;
-			}
-}
-
-short int fitsInSystem(CircleSystem *sys, Circle *c)
-{
-	// checking for limit
-	if (sys->circleCount == sys->maxCircleCount)
-		return 0;
-
-	// checking if the new circle is inside existing circle.
-	int count = sys->circleCount;
-	for (int i = 0; i < count; ++i)
+	List *circles = sys->circles;
+	node *curr = circles->first;
+	while (curr)
 	{
-		Circle *curr = sys->circles[i];
-		if (distance(curr->x, curr->y, c->x, c->y) < (c->r + curr->r))
-			return 0;
+		circleUpdate(curr->circle, mouse);
+		curr = curr->next;
 	}
-
-	return 1;
 }
 
 short int addCircle(CircleSystem *sys, Circle *c)
 {
-	if (fitsInSystem(sys, c) == 0)
-		return 0;
-
-	sys->circles[sys->circleCount] = c;
-	++sys->circleCount;
+	listPush(sys->circles, c);
 	return 1;
 }
 
-CircleSystem *getCircleSystem(int maxCircleCount)
+CircleSystem *getCircleSystem()
 {
 	CircleSystem *resp = malloc(sizeof(CircleSystem));
-	resp->maxCircleCount = maxCircleCount;
-	resp->circleCount = 0;
-	resp->circles = calloc(maxCircleCount, sizeof(Circle));
+	resp->circles = getList();
 	return resp;
+}
+
+void cleanCircleSystem(CircleSystem *c)
+{
+	listDelete(c->circles);
+	free(c);
 }

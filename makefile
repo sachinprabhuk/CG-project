@@ -1,20 +1,34 @@
-output: main.o ./lib/circle.o ./lib/constants.o ./lib/utils.o ./lib/circleSys.o
-	gcc -o output main.o ./lib/constants.o ./lib/circle.o ./lib/utils.o ./lib/circleSys.o -lglut -lGLU -lGL -lm
+o=./objfiles
 
-main.o: main.c
-	gcc -c main.c
+output: createDir ${o}/main.o ${o}/list.o ${o}/introPage.o ${o}/circle.o ${o}/constants.o ${o}/utils.o ${o}/circleSys.o ${o}/vector.o
+	gcc -o output ./objfiles/* -lglut -lGLU -lGL -lm
 
-circleSys.o: ./headers/circleSys.h ./lib/circleSys.c
-	gcc -c ./lib/circleSys.c
+createDir:
+	mkdir -p ./objfiles
 
-utils.o: ./headers/utils.h ./lib/utils.c
-	gcc -c utils.c
+${o}/main.o: main.c
+	gcc -c main.c -o ${o}/main.o
 
-constants.o: ./lib/constants.c ./headers/constants.h
-	gcc -c ./lib/constants.c -o
+${o}/list.o: ./lib/list.c
+	gcc  -o ${o}/list.o -c ./lib/list.c
 
-circle.o: ./lib/circle.c ./headers/circle.h
-	gcc -c ./lib/circle.c
+${o}/introPage.o: ./lib/introPage.c
+	gcc -c ./lib/introPage.c -o ${o}/introPage.o
+
+${o}/circleSys.o: ./lib/circleSys.c
+	gcc -c ./lib/circleSys.c -o ${o}/circleSys.o
+
+${o}/utils.o: ./lib/utils.c
+	gcc -c ./lib/utils.c  -o ${o}/utils.o
+
+${o}/constants.o: ./lib/constants.c 
+	gcc -c ./lib/constants.c -o ${o}/constants.o
+
+${o}/circle.o: ./lib/circle.c
+	gcc -c ./lib/circle.c  -o ${o}/circle.o
+
+${o}/vector.o: ./lib/vector.c 
+	gcc -c ./lib/vector.c -o ${o}/vector.o
 
 clean:
 	find . -name '*.o' -delete
